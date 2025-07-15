@@ -41,34 +41,7 @@ def get_banknifty_spot():
         print("❌ Exception while fetching spot:", e)
         return 0
 
-        data = response.json()
-        ltp = float(data.get("data", {}).get("last_traded_price", 0))
-        print("✅ Fetched LTP:", ltp)
-        return round(ltp / 100) * 100
-
-    except Exception as e:
-        print("❌ Exception while fetching spot:", e)
-        return 0
-
-        data = response.json()
-        ltp = float(data.get("data", {}).get("last_traded_price", 0))
-        print("✅ Fetched LTP:", ltp)
-        return round(ltp / 100) * 100
-
-    except Exception as e:
-        print("❌ Exception while fetching spot:", e)
-        print("📛 Spot fetch failed — response.text:", response.text)
-        return 0
-
-        data = response.json()
-        ltp = float(data.get("data", {}).get("last_traded_price", 0))
-        print("✅ Got LTP:", ltp)
-        return round(ltp / 100) * 100
-
-    except Exception as e:
-        print("❌ Spot Fetch Error:", e)
-        return 0
-
+        
 @app.route("/webhook", methods=["GET", "POST"])
 def webhook():
     try:
