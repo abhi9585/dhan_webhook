@@ -80,6 +80,6 @@ def webhook():
 # === Keep the server alive using Waitress ===
 from waitress import serve
 
-if __name__ == "_main_":
+if __name__ == "__main__":
     print("Webhook server starting with Waitress...")
     serve(app, host="0.0.0.0", port=10000)
