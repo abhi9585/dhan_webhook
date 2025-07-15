@@ -1,18 +1,14 @@
-import requests
+def get_banknifty_spot():
+    try:
+        url = f"{DHAN_BASE}/market-feed/quote/NSE_EQ/BANKNIFTY"  # changed segment & symbol
+        headers = {"access-token": DHAN_TOKEN}
+        
+        res = requests.get(url, headers=headers)
+        print("BankNifty Spot Raw Response:", res.text)  # Debug output
 
-url = "https://dhan-webhook-final.onrender.com/webhook"
-
-payload = {
-    "direction": "BUY",
-    "option_type": "CE",
-    "expiry": "250717"
-}
-
-# 🔐 Add token to headers
-headers = {
-    "X-Webhook-Token": "my_9585_secure_token"
-}
-
-response = requests.post(url, json=payload, headers=headers)
-print("Status Code:", response.status_code)
-print("Response:", response.json())
+        data = res.json()
+        ltp = float(data.get("dhan", {}).get("ltp", 0))
+        return round(ltp / 100) * 100
+    except Exception as e:
+        print("Error fetching spot price:", e)
+        return 0
