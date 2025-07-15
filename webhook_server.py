@@ -13,10 +13,20 @@ DHAN_TOKEN = os.getenv("DHAN_TOKEN")
 
 def get_banknifty_spot():
     try:
-        url = f"{DHAN_BASE}/market-feed/quote/NSE_INDEX/Nifty Bank"
-        headers = {"access-token": DHAN_TOKEN}
+        import requests, os
+        url = "https://api.dhan.co/market-feed/quote/NSE_INDEX/Nifty Bank"
+        headers = {"access-token": os.getenv("DHAN_TOKEN")}
         res = requests.get(url, headers=headers)
+
+        # Log raw response to diagnose
+        print("Raw response:", res.text)
+
+        if res.status_code != 200:
+            return 0
+
         data = res.json()
+        print("Parsed JSON:", data)  # Extra log
+
         ltp = float(data.get("dhan", {}).get("ltp", 0))
         return round(ltp / 100) * 100
     except Exception as e:
