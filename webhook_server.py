@@ -18,16 +18,25 @@ def get_banknifty_spot():
         }
 
         payload = {
-            "security_id": "NSE_INDEX|26009"  # Bank Nifty index
+            "security_id": "NSE_INDEX|26009"  # Bank Nifty index ID
         }
 
-        print("➡ Requesting LTP...")
+        print("➡ Sending spot price request...")
         response = requests.post(url, headers=headers, json=payload)
         print("🌐 Status Code:", response.status_code)
-        print("📄 Raw:", response.text)
+        print("📄 Response Text:", response.text)
 
         if response.status_code != 200:
             return 0
+
+        data = response.json()
+        ltp = float(data.get("data", {}).get("last_traded_price", 0))
+        print("✅ Fetched LTP:", ltp)
+        return round(ltp / 100) * 100
+
+    except Exception as e:
+        print("❌ Exception while fetching spot:", e)
+        return 0
 
         data = response.json()
         ltp = float(data.get("data", {}).get("last_traded_price", 0))
