@@ -4,7 +4,7 @@ from datetime import datetime
 import traceback
 import requests
 
-app = Flask(_name_)
+app = Flask(__name__)
 print("Webhook server started")
 
 DHAN_BASE = "https://api.dhan.co"
