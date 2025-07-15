@@ -7,7 +7,7 @@ app = Flask(__name__)
 print("✅ Webhook server started")
 
 DHAN_BASE = "https://api.dhan.co"
-DHAN_TOKEN = os.getenv("DHAN_TOKEN")
+DHAN_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkaGFuIiwicGFydG5lcklkIjoiIiwiZXhwIjoxNzUyNjY3MzY2LCJ0b2tlbkNvbnN1bWVyVHlwZSI6IlNFTEYiLCJ3ZWJob29rVXJsIjoiIiwiZGhhbkNsaWVudElkIjoiMTEwNzczNTIwNCJ9.e4E4_h8W39nc8nZUN1d1594jC-AdDH4-b6LeV3pa4J0xJSPaa-qMH-seJ_BkqkaNVFRZ0T0fN5fqTr44hnddqw"
 
 def get_banknifty_spot():
     try:
@@ -18,16 +18,25 @@ def get_banknifty_spot():
         }
 
         payload = {
-            "security_id": "NSE_INDEX|26009"  # Bank Nifty index ID
+            "security_id": "NSE_INDEX|26009"
         }
 
-        print("➡ Sending spot price request...")
+        print("➡ Sending POST request to fetch BankNifty spot...")
         response = requests.post(url, headers=headers, json=payload)
         print("🌐 Status Code:", response.status_code)
         print("📄 Response Text:", response.text)
 
         if response.status_code != 200:
             return 0
+
+        data = response.json()
+        ltp = float(data.get("data", {}).get("last_traded_price", 0))
+        print("✅ Fetched LTP:", ltp)
+        return round(ltp / 100) * 100
+
+    except Exception as e:
+        print("❌ Exception while fetching spot:", e)
+        return 0
 
         data = response.json()
         ltp = float(data.get("data", {}).get("last_traded_price", 0))
