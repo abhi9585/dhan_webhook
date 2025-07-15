@@ -5,34 +5,38 @@ import traceback
 from datetime import datetime
 from waitress import serve
 
-app = Flask(__name__)
-print("webhook server started")
+app = Flask(_name_)
+print("Webhook server started")
 
+# === Configuration ===
 DHAN_BASE = "https://api.dhan.co"
 DHAN_TOKEN = os.getenv("DHAN_TOKEN")
 
+# === Get Bank Nifty Spot Price ===
 def get_banknifty_spot():
     try:
-        import requests, os
-        url = "https://api.dhan.co/market-feed/quote/NSE_INDEX/Nifty Bank"
-        headers = {"access-token": os.getenv("DHAN_TOKEN")}
-        res = requests.get(url, headers=headers)
+        url = f"{DHAN_BASE}/market-feed/quote/NSE_INDEX/NIFTY_BANK"
+        print("Requesting:", url)  # ✅ Debug print to confirm HTTP URL
+        headers = {
+            "access-token": DHAN_TOKEN
+        }
 
-        # Log raw response to diagnose
-        print("Raw response:", res.text)
+        response = requests.get(url, headers=headers)
+        print("Raw Response:", response.text)
+        print("Status Code:", response.status_code)
 
-        if res.status_code != 200:
+        if response.status_code != 200:
             return 0
 
-        data = res.json()
-        print("Parsed JSON:", data)  # Extra log
-
+        data = response.json()
         ltp = float(data.get("dhan", {}).get("ltp", 0))
         return round(ltp / 100) * 100
+
     except Exception as e:
-        print("Error fetching spot price:", e)
+        print("Error in get_banknifty_spot:", e)
         return 0
 
+# === Webhook Route ===
 @app.route("/webhook", methods=["GET", "POST"])
 def webhook():
     try:
@@ -46,18 +50,21 @@ def webhook():
         direction = data.get("direction", "").upper()
         option_type = data.get("option_type", "").upper()
         expiry = data.get("expiry", datetime.today().strftime("%y%m%d"))
-        quantity = 30  # Fixed lot size
+        quantity = 30  # Fixed 1 lot
 
         if not all([direction, option_type]):
             return jsonify({"status": "error", "message": "Missing required fields"})
 
+        # === Get ATM strike price ===
         spot_strike = get_banknifty_spot()
         if spot_strike == 0:
             return jsonify({"status": "error", "message": "Failed to fetch spot"})
 
+        # === Build option symbol ===
         symbol = f"BANKNIFTY{expiry}{spot_strike}{option_type}"
         dhan_symbol = f"NSE:{symbol}"
 
+        # === Order Payload ===
         payload = {
             "transaction_type": direction,
             "symbol": dhan_symbol,
@@ -75,6 +82,7 @@ def webhook():
             "Content-Type": "application/json"
         }
 
+        # === Send Order ===
         response = requests.post(f"{DHAN_BASE}/orders", json=payload, headers=headers)
 
         return jsonify({
@@ -86,6 +94,7 @@ def webhook():
     except Exception as e:
         return jsonify({"status": "error", "trace": traceback.format_exc()})
 
-if __name__ == "__main__":
+# === Start Waitress Server ===
+if _name_ == "_main_":
     print("Webhook server starting with Waitress...")
     serve(app, host="0.0.0.0", port=10000)
