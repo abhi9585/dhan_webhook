@@ -3,7 +3,7 @@ import requests
 import os
 from datetime import datetime
 
-app = Flask(_name_)
+app = Flask(__name__)
 print("✅ Webhook server started")
 
 DHAN_BASE = "https://api.dhan.co"
@@ -93,6 +93,6 @@ def webhook():
 
 from waitress import serve
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     print("🚀 Starting Webhook server on port 10000...")
     serve(app, host="0.0.0.0", port=10000)
