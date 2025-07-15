@@ -36,6 +36,7 @@ def get_banknifty_spot():
 
     except Exception as e:
         print("❌ Exception while fetching spot:", e)
+        print("📛 Spot fetch failed — response.text:", response.text)
         return 0
 
         data = response.json()
