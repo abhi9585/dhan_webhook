@@ -1,7 +1,7 @@
 import requests
 
 # Your deployed webhook URL
-url = "https://dhan-webhook-final.onrender.com/webhook"
+url = "https://dhan-webhook-final-oop9.onrender.com"
 
 # Example payload to test buy CE order
 payload = {
