@@ -1,20 +1,36 @@
 import requests
+import os
 
-DHAN_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkaGFuIiwicGFydG5lcklkIjoiIiwiZXhwIjoxNzUyNjY3MzY2LCJ0b2tlbkNvbnN1bWVyVHlwZSI6IlNFTEYiLCJ3ZWJob29rVXJsIjoiIiwiZGhhbkNsaWVudElkIjoiMTEwNzczNTIwNCJ9.e4E4_h8W39nc8nZUN1d1594jC-AdDH4-b6LeV3pa4J0xJSPaa-qMH-seJ_BkqkaNVFRZ0T0fN5fqTr44hnddqw"
+# Load DHAN token from environment
+DHAN_TOKEN = os.getenv("DHAN_TOKEN")
+DHAN_BASE = "https://api.dhan.co"
 
-url = "https://api.dhan.co/market-feed/quote/NSE_INDEX/NIFTY_BANK"
+def get_banknifty_spot():
+    url = f"{DHAN_BASE}/market-feed/quotes"
+    headers = {
+        "access-token": DHAN_TOKEN,
+        "Content-Type": "application/json"
+    }
 
-headers = {
-    "access-token": DHAN_TOKEN
-}
+    payload = {
+        "security_id": "NSE_INDEX|26009"
+    }
 
-print("➡ Requesting:", url)
-response = requests.get(url, headers=headers)
+    print("➡ Sending request to Dhan for BankNifty Spot...")
+    response = requests.post(url, headers=headers, json=payload)
+    
+    print("🌐 Status Code:", response.status_code)
+    print("📄 Response Text:", response.text)
 
-print("🌐 Status Code:", response.status_code)
-print("📄 Raw Text:", response.text)
+    if response.status_code == 200:
+        data = response.json()
+        ltp = data.get("data", {}).get("last_traded_price", None)
+        if ltp:
+            print("✅ BankNifty Spot Price:", ltp)
+        else:
+            print("⚠ Price not found in response.")
+    else:
+        print("❌ Failed to fetch spot price.")
 
-try:
-    print("🧾 Parsed JSON:", response.json())
-except Exception as e:
-    print("❌ JSON Parse Error:", e)
+if _name_ == "_main_":
+    get_banknifty_spot()
