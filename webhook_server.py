@@ -6,7 +6,7 @@ from datetime import datetime
 from waitress import serve
 
 app = Flask(_name_)
-print("Webhook server started")
+print("✅ Webhook server started")
 
 # === Configuration ===
 DHAN_BASE = "https://api.dhan.co"
@@ -48,7 +48,7 @@ def get_banknifty_spot():
 def webhook():
     try:
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        print(f"Webhook ping received at {now}", flush=True)
+        print(f"📩 Webhook ping received at {now}", flush=True)
 
         if request.method == "GET":
             return jsonify({"status": "ok", "message": "GET received"})
@@ -57,21 +57,18 @@ def webhook():
         direction = data.get("direction", "").upper()
         option_type = data.get("option_type", "").upper()
         expiry = data.get("expiry", datetime.today().strftime("%y%m%d"))
-        quantity = 30  # Fixed 1 lot
+        quantity = 30
 
         if not all([direction, option_type]):
             return jsonify({"status": "error", "message": "Missing required fields"})
 
-        # === Get ATM strike price ===
         spot_strike = get_banknifty_spot()
         if spot_strike == 0:
             return jsonify({"status": "error", "message": "Failed to fetch spot"})
 
-        # === Build option symbol ===
         symbol = f"BANKNIFTY{expiry}{spot_strike}{option_type}"
         dhan_symbol = f"NSE:{symbol}"
 
-        # === Order Payload ===
         payload = {
             "transaction_type": direction,
             "symbol": dhan_symbol,
@@ -89,7 +86,6 @@ def webhook():
             "Content-Type": "application/json"
         }
 
-        # === Send Order ===
         response = requests.post(f"{DHAN_BASE}/orders", json=payload, headers=headers)
 
         return jsonify({
@@ -103,5 +99,6 @@ def webhook():
 
 # === Start Waitress Server ===
 if _name_ == "_main_":
-    print("Webhook server starting with Waitress...")
-    serve(app, host="0.0.0.0", port=10000)
+    print("🚀 Webhook server starting with Waitress...")
+    port = int(os.environ.get("PORT", 10000))  # Use PORT from Render
+    serve(app, host="0.0.0.0", port=port)
