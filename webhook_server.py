@@ -5,7 +5,7 @@ import traceback
 from datetime import datetime
 from waitress import serve
 
-app = Flask(_name_)
+app = Flask(__name__)
 print("✅ Webhook server started")
 
 # === Configuration ===
@@ -98,7 +98,7 @@ def webhook():
         return jsonify({"status": "error", "trace": traceback.format_exc()})
 
 # === Start Waitress Server ===
-if _name_ == "_main_":
+if __name__ == "__main__":
     print("🚀 Webhook server starting with Waitress...")
     port = int(os.environ.get("PORT", 10000))  # Use PORT from Render
     serve(app, host="0.0.0.0", port=port)
