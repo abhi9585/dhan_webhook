@@ -86,6 +86,7 @@ def webhook():
             "Content-Type": "application/json"
         }
 
+        print("📦 Placing order:", payload)
         response = requests.post(f"{DHAN_BASE}/orders", json=payload, headers=headers)
 
         return jsonify({
@@ -100,5 +101,5 @@ def webhook():
 # === Start Waitress Server ===
 if __name__ == "__main__":
     print("🚀 Webhook server starting with Waitress...")
-    port = int(os.environ.get("PORT", 10000))  # Use PORT from Render
+    port = int(os.environ.get("PORT", 10000))  # Render default port
     serve(app, host="0.0.0.0", port=port)
