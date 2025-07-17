@@ -14,33 +14,29 @@ DHAN_TOKEN = os.getenv("DHAN_TOKEN")
 
 # === Get Bank Nifty Spot Price ===
 def get_banknifty_spot():
+    url = "https://api.dhan.co/market/feed/indices"
+    headers = {
+        "access-token": DHAN_TOKEN,
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "exchangeSegment": "NSE",
+        "indexName": "Nifty Bank"
+    }
+
     try:
-        url = f"{DHAN_BASE}/market-feed/quotes"
-        headers = {
-            "access-token": DHAN_TOKEN,
-            "Content-Type": "application/json"
-        }
-
-        payload = {
-            "security_id": "NSE_INDEX|26009"
-        }
-
-        print("➡ Requesting spot with:", payload)
-        response = requests.post(url, headers=headers, json=payload)
-
+        response = requests.post(url, json=payload, headers=headers)
         print("🌐 Status Code:", response.status_code)
         print("📄 Raw Response:", response.text)
 
-        if response.status_code != 200:
+        if response.status_code == 200:
+            data = response.json()
+            ltp = data.get("indexFeed", {}).get("lastTradedPrice", 0)
+            return round(ltp)
+        else:
             return 0
-
-        data = response.json()
-        ltp = float(data.get("data", {}).get("last_traded_price", 0))
-        print("✅ LTP fetched:", ltp)
-        return round(ltp / 100) * 100
-
     except Exception as e:
-        print("❌ Error fetching spot:", e)
+        print("❌ Exception in get_banknifty_spot:", str(e))
         return 0
 
 # === Webhook Route ===
