@@ -8,7 +8,7 @@ HEAD
     autoDeploy: true
     envVars:
       - key: DHAN_TOKEN
-        value:
+        value:eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkaGFuIiwicGFydG5lcklkIjoiIiwiZXhwIjoxNzUyODQ0NDg2LCJ0b2tlbkNvbnN1bWVyVHlwZSI6IlNFTEYiLCJ3ZWJob29rVXJsIjoiIiwiZGhhbkNsaWVudElkIjoiMTEwNzczNTIwNCJ9.53cHxByglSfkFS48-2_EhYySAnW98Kj4Ck7i4XqV_rKJVcdnPeouuvf64iLyPKUbjEC9nE9Ch5jllH71HbeUzA
 
     runtime: python
     buildCommand: ""
