@@ -25,20 +25,23 @@ def get_banknifty_spot():
     }
 
     try:
+        print("📤 Sending payload:", payload)
+        print("🧾 Headers:", headers)
         response = requests.post(url, json=payload, headers=headers)
         print("🌐 Status Code:", response.status_code)
         print("📄 Raw Response:", response.text)
 
         if response.status_code == 200:
             data = response.json()
+            print("✅ Parsed:", data)
             ltp = data.get("indexFeed", {}).get("lastTradedPrice", 0)
             return round(ltp)
         else:
+            print("⚠ Non-200 response")
             return 0
     except Exception as e:
         print("❌ Exception in get_banknifty_spot:", str(e))
         return 0
-
 # === Webhook Route ===
 @app.route("/webhook", methods=["GET", "POST"])
 def webhook():
