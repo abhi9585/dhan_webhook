@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: dhan-webhook-final
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python webhook_server.py
+    autoDeploy: true
+    envVars:
+      - key: DHAN_TOKEN
+        value:
