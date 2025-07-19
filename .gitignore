@@ -1,0 +1,4 @@
+api-scrip-master.csv
+*.csv
+*.env
+_pycache_/
