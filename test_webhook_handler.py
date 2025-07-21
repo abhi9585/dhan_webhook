@@ -62,7 +62,7 @@ def get_tokens_from_spot(spot_price, csv_df=None):
 
 
 # === If testing standalone ===
-if _name_ == "_main_":
+if __name__ == "__main__":
     try:
         spot = int(input("📥 Enter BankNifty spot price: "))
         get_tokens_from_spot(spot)
