@@ -33,22 +33,23 @@ def webhook():
         print(f"🎯 Action: {action} | Spot: {spot_price} | Token Used: {token}")
 
         # === Construct order payload ===
-        order_payload = {
-            "transactionType": "BUY",
-            "orderType": "MARKET",
-            "productType": "INTRADAY",
-            "price": 0,
-            "quantity": quantity,
-            "triggerPrice": 0,
-            "instrumentToken": token,
-            "orderValidity": "DAY",
-            "disclosedQuantity": 0,
-            "afterMarketOrder": False,
-            "amoTime": "OPEN",
-            "trailingStopLoss": 0,
-            "stopLoss": 0,
-            "takeProfit": 0
-        }
+order_payload = {
+    "transactionType": "BUY",
+    "exchangeSegment": "NSE_OPT",  # ✅ ADD THIS LINE
+    "orderType": "MARKET",
+    "productType": "INTRADAY",
+    "price": 0,
+    "quantity": quantity,
+    "triggerPrice": 0,
+    "instrumentToken": token,
+    "orderValidity": "DAY",
+    "disclosedQuantity": 0,
+    "afterMarketOrder": False,
+    "amoTime": "OPEN",
+    "trailingStopLoss": 0,
+    "stopLoss": 0,
+    "takeProfit": 0
+}
 
         # === Set request headers ===
         headers = {
