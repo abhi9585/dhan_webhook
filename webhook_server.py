@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 import requests
 from test_webhook_handler import get_tokens_from_spot  # fetch CE/PE tokens from CSV
 
-app = Flask(_name_)
+app = Flask(__name__)
 
 # Replace with your actual Dhan API credentials
 DHAN_CLIENT_ID = "YourClientID"
@@ -69,5 +69,5 @@ def webhook():
         print("❌ Error:", str(e))
         return jsonify({"error": str(e)}), 500
 
-if _name_ == '_main_':
+if __name__ == '__main__':
     app.run(debug=True, port=10000)
