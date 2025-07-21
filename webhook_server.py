@@ -1,15 +1,15 @@
 from flask import Flask, request, jsonify
 import requests
-from test_webhook_handler import get_tokens_from_spot  # fetch CE/PE tokens from CSV
 import os
+from test_webhook_handler import get_tokens_from_spot  # Function to fetch CE/PE tokens from CSV
 
 app = Flask(__name__)
 
-# === Read credentials from environment variables ===
-DHAN_CLIENT_ID = os.getenv("DHAN_CLIENT_ID")
-DHAN_ACCESS_TOKEN = os.getenv("DHAN_ACCESS_TOKEN")
+# === Load credentials from environment variables ===
+DHAN_CLIENT_ID = os.environ.get("DHAN_CLIENT_ID")
+DHAN_ACCESS_TOKEN = os.environ.get("DHAN_ACCESS_TOKEN")
 
-# === Dhan API URL ===
+# === Dhan API endpoint ===
 PLACE_ORDER_URL = "https://api.dhan.co/orders"
 
 @app.route('/webhook', methods=['POST'])
@@ -18,21 +18,21 @@ def webhook():
         data = request.json
         print("📥 Incoming Webhook Data:", data)
 
-        # Extract data from webhook
+        # === Extract data from the webhook payload ===
         spot_price = int(data.get("spot", 0))
-        action = data.get("action", "").lower()  # Expected: "buy_ce" or "buy_pe"
-        quantity = int(data.get("quantity", 15))  # Default to 15
+        action = data.get("action", "").lower()  # "buy_ce" or "buy_pe"
+        quantity = int(data.get("quantity", 15))  # default to 15
 
         if action not in ["buy_ce", "buy_pe"]:
             return jsonify({"error": "Invalid action"}), 400
 
-        # Get option tokens
+        # === Get instrument token from CSV lookup ===
         ce_token, pe_token = get_tokens_from_spot(spot_price)
         token = ce_token if action == "buy_ce" else pe_token
 
-        print(f"🎯 Action: {action} | Token: {token}")
+        print(f"🎯 Action: {action} | Spot: {spot_price} | Token Used: {token}")
 
-        # === Build order payload ===
+        # === Construct order payload ===
         order_payload = {
             "transactionType": "BUY",
             "orderType": "MARKET",
@@ -57,9 +57,13 @@ def webhook():
             "client-id": DHAN_CLIENT_ID
         }
 
-        # === Send order to Dhan API ===
+        # === Log headers for debug (Optional) ===
+        print("🧪 Headers Sent:", headers)
+        print("📦 Order Payload:", order_payload)
+
+        # === Place order ===
         response = requests.post(PLACE_ORDER_URL, headers=headers, json=order_payload)
-        print("✅ Order Response:", response.status_code, response.text)
+        print("✅ Dhan API Response:", response.status_code, response.text)
 
         if response.status_code == 200:
             return jsonify({"message": "Order placed successfully"}), 200
