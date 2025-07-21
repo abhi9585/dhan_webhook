@@ -1,70 +1,41 @@
 import pandas as pd
+from datetime import datetime
 
-# Load CSV once globally for performance
-CSV_FILE = "api-scrip-master.csv"
-EXPIRY_DATE = "7/31/2025"  # Set monthly expiry here
+# === Load CSV master ===
+CSV_PATH = "api-scrip-master.csv"  # ensure this is deployed on Render
+csv_df = pd.read_csv(CSV_PATH)
 
-# Load CSV
-try:
-    df = pd.read_csv(CSV_FILE, low_memory=False)
-    print(f"✅ Loaded {CSV_FILE} with {len(df)} rows.")
-except Exception as e:
-    print(f"❌ Failed to load CSV: {e}")
-    df = pd.DataFrame()
+# === Set monthly expiry date (example: July 31, 2025) ===
+raw_expiry = "2025-07-31"  # keep this updated manually or pass via TradingView later
+EXPIRY_DATE = datetime.strptime(raw_expiry, "%Y-%m-%d").strftime("%#m/%#d/%Y")  # Windows-compatible
 
-
-def get_tokens_from_spot(spot_price, csv_df=None):
-    """
-    Given a BankNifty spot price, return CE and PE instrument tokens.
-    Returns (ce_token, pe_token) or (None, None) if not found.
-    """
-
-    if csv_df is None:
-        csv_df = df
-
-    if csv_df.empty:
-        print("❌ CSV is empty or not loaded.")
-        return None, None
-
-    # === Derive CE/PE Strikes ===
+def get_tokens_from_spot(spot_price):
+    # === Derive CE/PE strikes ===
     ce_strike = int(spot_price // 100) * 100
-    pe_strike = ce_strike + 100
+    pe_strike = ce_strike + 100  # you can also do -100 if needed
 
-    print(f"\n🎯 Spot: {spot_price}")
-    print(f"👉 CE Strike: {ce_strike}, PE Strike: {pe_strike}")
-    print(f"📅 Expiry: {EXPIRY_DATE}")
+    print(f"📌 Spot: {spot_price}")
+    print(f"💡 CE Strike: {ce_strike}, PE Strike: {pe_strike}")
+    print(f"📆 Expiry: {EXPIRY_DATE}")
 
-    # === Filter rows ===
+    # === Filter CE Row ===
     ce_row = csv_df[
-        (csv_df["SYMBOL_NAME"].str.contains("BANKNIFTY", case=False, na=False)) &
+        (csv_df["SYMBOL_NAME"].str.contains("BANKNIFTY", case=False)) &
         (csv_df["OPTION_TYPE"] == "CE") &
         (csv_df["STRIKE_PRICE"] == ce_strike) &
         (csv_df["SM_EXPIRY_DATE"] == EXPIRY_DATE)
     ]
 
+    # === Filter PE Row ===
     pe_row = csv_df[
-        (csv_df["SYMBOL_NAME"].str.contains("BANKNIFTY", case=False, na=False)) &
+        (csv_df["SYMBOL_NAME"].str.contains("BANKNIFTY", case=False)) &
         (csv_df["OPTION_TYPE"] == "PE") &
         (csv_df["STRIKE_PRICE"] == pe_strike) &
         (csv_df["SM_EXPIRY_DATE"] == EXPIRY_DATE)
     ]
 
-    ce_token = ce_row.iloc[0]["SECURITY_ID"] if not ce_row.empty else None
-    pe_token = pe_row.iloc[0]["SECURITY_ID"] if not pe_row.empty else None
-
-    if ce_token: print(f"✅ CE Token: {ce_token}")
-    else: print("❌ CE token not found")
-
-    if pe_token: print(f"✅ PE Token: {pe_token}")
-    else: print("❌ PE token not found")
+    # === Extract instrument tokens ===
+    ce_token = int(ce_row["TOKEN"].values[0]) if not ce_row.empty else None
+    pe_token = int(pe_row["TOKEN"].values[0]) if not pe_row.empty else None
 
     return ce_token, pe_token
-
-
-# === If testing standalone ===
-if __name__ == "__main__":
-    try:
-        spot = int(input("📥 Enter BankNifty spot price: "))
-        get_tokens_from_spot(spot)
-    except Exception as e:
-        print("❌ Error:", e)
