@@ -3,7 +3,7 @@ import os
 from flask import Flask, request, jsonify
 import requests
 
-app = Flask(_name_)
+app = Flask(__name__)
 
 # Load from environment
 DHAN_CLIENT_ID = os.environ.get("DHAN_CLIENT_ID")
@@ -59,5 +59,5 @@ def webhook():
         print("❌ Error placing order:", e)
         return jsonify({"error": str(e)}), 500
 
-if _name_ == '_main_':
+if __name__ == '__main__':
     app.run(port=10000, debug=True)
