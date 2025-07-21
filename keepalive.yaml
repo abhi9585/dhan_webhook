@@ -10,4 +10,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Ping Render Webhook
-        run: curl -X GET https://dhan-webhook-final-oop9.onrender.com/webhook
+        run: curl -X GET https://dhan-webhook-final-oop9.onrender.com/ping
