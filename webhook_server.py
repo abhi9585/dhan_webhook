@@ -59,7 +59,7 @@ def webhook():
             "transactionType": "BUY",
             "orderType": "MARKET",
             "exchange": "NSE",
-            "exchangeSegment": "NSE_OPT",
+            "exchangeSegment": "NSE_FNO",
             "securityId": instrument_token,
             "quantity": 30,
             "price": 0,
