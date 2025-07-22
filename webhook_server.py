@@ -60,7 +60,7 @@ def webhook():
             "orderType": "MARKET",
             "exchange": "NSE",
             "exchangeSegment": "NSE_FNO",
-            "securityId": instrument_token,
+            "securityId": 1010000075860795,
             "quantity": 30,
             "price": 0,
             "productType": "INTRADAY",
