@@ -10,6 +10,7 @@ app = Flask(__name__)
 CLIENT_ID = os.getenv("DHAN_CLIENT_ID")
 ACCESS_TOKEN = os.getenv("DHAN_ACCESS_TOKEN")
 WEBHOOK_TOKEN = os.getenv("WEBHOOK_TOKEN")
+print(f"🔐 Server-side token from env: {WEBHOOK_TOKEN}")
 CSV_FILE = "api-scrip-master.csv"  # Must be in same folder or update full path
 
 # === Constants ===
