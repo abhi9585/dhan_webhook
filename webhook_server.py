@@ -37,8 +37,8 @@ def webhook():
     auth_header = request.headers.get("Authorization")
     expected_header = f"Bearer {WEBHOOK_TOKEN}"
 
-      if auth_header != expected_header:
-          return jsonify({"error": "Unauthorized"}), 401
+    if auth_header != expected_header:
+        return jsonify({"error": "Unauthorized"}), 401
 
     try:
         data = request.json
