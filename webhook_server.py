@@ -34,9 +34,11 @@ def find_instrument_token(strike: str, option_type: str):
 @app.route('/webhook', methods=['POST'])
 def webhook():
     # ✅ Token check
-    token = request.args.get("token")
-    if token != WEBHOOK_TOKEN:
-        return jsonify({"error": "Unauthorized"}), 401
+    auth_header = request.headers.get("Authorization")
+    expected_header = f"Bearer {WEBHOOK_TOKEN}"
+
+if auth_header != expected_header:
+    return jsonify({"error": "Unauthorized"}), 401
 
     try:
         data = request.json
