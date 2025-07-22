@@ -76,7 +76,9 @@ def webhook():
             "Access-Token": ACCESS_TOKEN,
             "Client-Id": CLIENT_ID
         }
-
+        print("📦 Order Payload:")
+        print(json.dumps(order_payload, indent=2))
+        print("🧾 Headers:", headers)
         response = requests.post(ORDER_API_URL, headers=headers, json=order_payload)
         print("✅ Order Response:", response.text)
         return jsonify({"message": "Order placed", "response": response.json()})
